@@ -1,0 +1,343 @@
+/* 1) ตัวแปรสีและเงาหลัก — ปรับธีมเว็บไซต์ได้จากตรงนี้ */
+:root {
+  --ink: #172b4d;
+  --muted: #687b95;
+  --line: #e4eaf2;
+  --surface: #fff;
+  --page: #f4f7fb;
+  --pink: #ed3157;
+  --blue: #2878e8;
+  --shadow: 0 8px 28px rgba(24, 43, 77, .12);
+}
+/* 2) ค่าพื้นฐานของหน้าเว็บและตัวอักษร */
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { color: var(--ink); background: var(--page); font-family: system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif; }
+button, input { font: inherit; }
+/* 3) แถบหัวเว็บ: โลโก้ ชื่อเว็บ ช่องค้นหา และปุ่มตำแหน่งผู้ใช้ */
+.app-header { height: 88px; display: flex; align-items: center; gap: 18px; padding: 12px 22px; background: rgba(255,255,255,.97); border-bottom: 1px solid var(--line); position: relative; z-index: 500; }
+.brand { display: flex; align-items: center; gap: 12px; min-width: 350px; color: var(--ink); text-decoration: none; }
+.brand-mark { width: 52px; height: 52px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 50%; color: #fff; background: #b71c36; border: 3px double #f5c75e; font-weight: 800; font-size: 15px; }
+.brand strong { display: block; font-size: clamp(18px, 1.8vw, 25px); line-height: 1.2; letter-spacing: -.5px; }
+.brand small { display: block; color: var(--muted); font-size: 12px; margin-top: 4px; }
+.search-wrap { margin-left: auto; max-width: 510px; flex: 1 1 240px; position: relative; }
+.search-wrap .form-control { border: 1px solid #d7e0ec; border-radius: 28px; padding: 12px 42px; height: 48px; box-shadow: none; color: var(--ink); }
+.search-wrap .form-control:focus { border-color: #8eb9f4; box-shadow: 0 0 0 3px rgba(40,120,232,.1); }
+.search-icon { position: absolute; left: 16px; top: 7px; color: #8292a8; font-size: 28px; line-height: 1; z-index: 2; }
+.clear-search { position: absolute; right: 12px; top: 8px; border: 0; background: transparent; color: var(--muted); font-size: 22px; }
+.btn-location { border: 0; border-radius: 28px; background: #eef3f8; color: var(--ink); padding: 12px 17px; display: flex; align-items: center; gap: 9px; font-weight: 650; white-space: nowrap; }
+.btn-location:hover { background: #e1ebf7; }
+.btn-location span:first-child { font-size: 23px; line-height: 1; }
+/* 4) โครงร่างหลัก: แถบรายการสถานที่ + พื้นที่แผนที่ */
+.app-main { height: calc(100% - 88px); display: grid; grid-template-columns: 370px minmax(0, 1fr); gap: 0; min-height: 0; }
+/* 5) แผงรายการสถานที่ด้านข้าง */
+.places-panel { background: var(--surface); z-index: 400; display: flex; flex-direction: column; min-height: 0; border-right: 1px solid var(--line); box-shadow: 5px 0 20px rgba(24,43,77,.06); }
+.panel-top { padding: 16px 16px 12px; display: flex; gap: 8px; align-items: center; border-bottom: 1px solid var(--line); }
+.category-buttons { display: flex; gap: 8px; flex: 1; }
+.category-btn { border: 1px solid transparent; border-radius: 14px; padding: 10px 11px; display: flex; align-items: center; justify-content: center; gap: 7px; font-size: 13px; font-weight: 700; flex: 1; white-space: nowrap; }
+.category-btn span { font-size: 17px; }
+.category-btn b { font-size: 11px; opacity: .8; }
+.category-btn.motorcycle { color: var(--pink); background: #fff0f3; }
+.category-btn.motorcycle.active { color: #fff; background: var(--pink); box-shadow: 0 5px 12px rgba(237,49,87,.18); }
+.category-btn.van { color: var(--blue); background: #edf5ff; }
+.category-btn.van.active { color: #fff; background: var(--blue); box-shadow: 0 5px 12px rgba(40,120,232,.18); }
+.icon-button { width: 35px; height: 38px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); font-size: 22px; }
+.icon-button:hover { background: #f1f5f9; }
+.results-heading { display: flex; justify-content: space-between; align-items: center; padding: 13px 20px 8px; font-weight: 750; font-size: 15px; }
+.count-pill { background: #f0f4f8; color: var(--muted); border-radius: 20px; min-width: 28px; text-align: center; padding: 3px 9px; font-size: 12px; }
+.status-message { color: var(--muted); font-size: 11px; padding: 0 20px 10px; }
+.places-list { overflow: auto; min-height: 0; flex: 1; padding: 0 10px 10px; }
+.place-row { width: 100%; display: flex; align-items: center; gap: 10px; border: 1px solid transparent; background: transparent; border-radius: 12px; padding: 10px; text-align: left; color: var(--ink); cursor: pointer; transition: background .15s, border-color .15s; }
+.place-row:hover { background: #f5f8fc; }
+.place-row.selected { background: #f0f6ff; border-color: #cfe1fb; }
+.place-symbol { width: 30px; height: 30px; display: grid; place-items: center; flex: 0 0 auto; color: #fff; border-radius: 10px; font-size: 15px; font-weight: 800; }
+.place-symbol.motorcycle { background: var(--pink); }
+.place-symbol.van { background: var(--blue); }
+.place-copy { flex: 1; min-width: 0; }
+.place-name { display: block; font-size: 13px; line-height: 1.4; font-weight: 650; overflow-wrap: anywhere; }
+.place-arrow { color: #94a3b8; font-size: 20px; }
+.empty-state { padding: 30px 18px; color: var(--muted); text-align: center; font-size: 13px; }
+.panel-footer { border-top: 1px solid var(--line); padding: 12px 18px; font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 7px; }
+.legend-dot { width: 10px; height: 10px; display: inline-block; border-radius: 50%; margin-right: 4px; vertical-align: -1px; }
+.motorcycle-dot { background: var(--pink); }
+.van-dot { background: var(--blue); }
+.user-dot { background: #2878e8; outline: 4px solid #dceaff; }
+/* 6) พื้นที่แผนที่และองค์ประกอบที่วางซ้อนบนแผนที่ */
+.map-shell { min-width: 0; min-height: 0; position: relative; background: #e9eff5; }
+#map { height: 100%; width: 100%; z-index: 1; }
+.map-legend { position: absolute; top: 16px; right: 16px; z-index: 300; background: rgba(255,255,255,.96); border: 1px solid rgba(220,228,238,.9); border-radius: 15px; box-shadow: var(--shadow); padding: 13px 15px; min-width: 150px; font-size: 12px; color: var(--muted); display: grid; gap: 9px; }
+.map-legend strong { color: var(--ink); font-size: 13px; margin-bottom: 1px; }
+.selected-card { position: absolute; bottom: 28px; left: 20px; z-index: 300; display: flex; align-items: center; gap: 10px; max-width: min(560px, calc(100% - 40px)); padding: 12px 42px 12px 12px; border-radius: 15px; background: rgba(255,255,255,.98); box-shadow: var(--shadow); border: 1px solid #e1e8f1; }
+.selected-icon { width: 36px; height: 36px; border-radius: 12px; display: grid; place-items: center; color: white; background: var(--pink); flex: 0 0 auto; }
+.selected-icon.van { background: var(--blue); }
+.selected-info { min-width: 0; flex: 1; }
+.selected-info strong { display: block; font-size: 13px; line-height: 1.35; }
+.selected-info small { display: block; color: var(--muted); font-size: 11px; margin-top: 3px; }
+.selected-card .btn { white-space: nowrap; border-radius: 9px; }
+.selected-close { position: absolute; right: 7px; top: 6px; border: 0; background: transparent; color: var(--muted); font-size: 20px; line-height: 1; }
+.map-help { position: absolute; z-index: 300; bottom: 0; right: 0; padding: 4px 7px; background: rgba(255,255,255,.8); color: #42536b; font-size: 10px; }
+.mobile-list-toggle { display: none; }
+/* 7) ข้อความแจ้งเตือนชั่วคราว */
+.app-toast { position: fixed; z-index: 1200; left: 50%; bottom: 24px; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; background: #172b4d; color: white; padding: 10px 16px; border-radius: 12px; box-shadow: var(--shadow); font-size: 13px; transition: opacity .2s, transform .2s; max-width: calc(100% - 32px); text-align: center; }
+.app-toast.show { opacity: 1; transform: translate(-50%, 0); }
+/* 8) หมุดแผนที่แบบกำหนดเอง
+   วินใช้สีชมพู ท่ารถตู้ใช้สีน้ำเงิน ส่วนตำแหน่งผู้ใช้ใช้จุดสีน้ำเงิน */
+.custom-map-marker { background: transparent; border: 0; }
+/* หมุดใหม่: วงกลมสีไล่ระดับ ขอบขาว และหางชี้ลง ช่วยให้เห็นชัดบนแผนที่ */
+.marker-pin {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(23, 43, 77, .28), 0 0 0 1px rgba(23, 43, 77, .06);
+  font-size: 17px;
+  line-height: 1;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+/* สามเหลี่ยมเล็กด้านล่างทำให้หมุดดูเหมือน pin แต่ไอคอนยังตั้งตรง */
+.marker-pin::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 10px solid var(--marker-color);
+  filter: drop-shadow(0 2px 1px rgba(23, 43, 77, .12));
+}
+.marker-pin.motorcycle { --marker-color: #e92350; background: linear-gradient(145deg, #ff6481, #e92350 72%); }
+.marker-pin.van { --marker-color: #1765d8; background: linear-gradient(145deg, #58a0ff, #1765d8 72%); }
+.marker-emoji { position: relative; z-index: 1; filter: drop-shadow(0 1px 1px rgba(0,0,0,.12)); }
+.marker-pin:hover, .marker-pin.selected {
+  transform: scale(1.12);
+  box-shadow: 0 6px 15px rgba(23, 43, 77, .32), 0 0 0 4px rgba(255,255,255,.82);
+}
+/* 9) หมุดตำแหน่งผู้ใช้และหน้าตากล่อง popup */
+.user-marker { width: 20px; height: 20px; border-radius: 50%; background: #2878e8; border: 3px solid white; box-shadow: 0 0 0 9px rgba(40,120,232,.2), 0 2px 8px rgba(0,0,0,.3); }
+/* Popup ของหมุด: กล่องสะอาด ขอบมน และปุ่มนำทางแบบมินิมอล */
+.leaflet-popup-content-wrapper {
+  border-radius: 14px;
+  box-shadow: 0 8px 26px rgba(23, 43, 77, .16);
+}
+.leaflet-popup-content { margin: 14px 16px; line-height: 1.5; min-width: 190px; }
+.popup-title { font-weight: 750; color: var(--ink); margin-bottom: 4px; font-size: 13px; }
+.popup-meta { color: var(--muted); font-size: 11px; margin-bottom: 11px; }
+.popup-directions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 11px;
+  border-radius: 9px;
+  background: #eef5ff;
+  color: #205eb7;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 700;
+  transition: background .18s ease, transform .18s ease;
+}
+.popup-directions:hover { background: #dfeeff; color: #174d9a; transform: translateY(-1px); }
+.popup-directions:focus-visible, .directions-button:focus-visible { outline: 3px solid rgba(40,120,232,.35); outline-offset: 2px; }
+.popup-directions-icon { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 6px; background: #d8e8ff; font-size: 14px; line-height: 1; }
+/* ปุ่มนำทางในการ์ดสถานที่ที่เลือก ใช้สไตล์เดียวกันทั้งเว็บไซต์ */
+.directions-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  flex: 0 0 auto;
+  padding: 9px 12px;
+  border: 1px solid #d8e6fb;
+  border-radius: 10px;
+  background: #eef5ff;
+  color: #205eb7;
+  font-size: 12px;
+  font-weight: 750;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background .18s ease, border-color .18s ease, transform .18s ease;
+}
+.directions-button:hover { background: #dfeeff; border-color: #bfd7fb; color: #174d9a; transform: translateY(-1px); }
+.directions-button span { font-size: 15px; line-height: 1; }
+/* 10) Tablet / หน้าจอขนาดกลาง */
+@media (max-width: 900px) {
+  .app-header { height: auto; min-height: 78px; padding: 10px 14px; gap: 10px; flex-wrap: wrap; }
+  .brand { min-width: 0; flex: 1 1 100%; }
+  .brand-mark { width: 42px; height: 42px; font-size: 12px; }
+  .brand strong { font-size: 19px; }
+  .brand small { font-size: 11px; }
+  .search-wrap { margin-left: 0; max-width: none; flex: 1 1 180px; }
+  .search-wrap .form-control { height: 42px; padding-top: 8px; padding-bottom: 8px; font-size: 13px; }
+  .search-icon { top: 4px; }
+  .btn-location { padding: 9px 12px; font-size: 12px; }
+  .app-main { height: calc(100% - 124px); grid-template-columns: 310px minmax(0, 1fr); }
+  .map-legend { top: 10px; right: 10px; padding: 10px 12px; min-width: 125px; }
+}
+/* 11) Mobile / หน้าจอมือถือ */
+@media (max-width: 650px) {
+  html, body { height: 100%; overflow: hidden; }
+  .app-header { min-height: 128px; align-content: center; gap: 9px; padding: 10px 12px; }
+  .brand { flex-basis: 100%; }
+  .brand strong { font-size: 18px; }
+  .brand small { font-size: 10px; }
+  .search-wrap { flex-basis: 0; }
+  .search-wrap .form-control { height: 40px; font-size: 12px; padding-left: 36px; }
+  .search-icon { left: 12px; font-size: 25px; }
+  .btn-location { height: 40px; padding: 7px 10px; gap: 5px; }
+  .btn-location span:first-child { font-size: 19px; }
+  .app-main { height: calc(100% - 128px); display: block; position: relative; }
+  .map-shell { position: absolute; inset: 0; }
+  .places-panel { position: absolute; z-index: 600; left: 8px; right: 8px; bottom: 8px; height: min(48%, 390px); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 8px 28px rgba(24,43,77,.2); overflow: hidden; transition: height .2s, transform .2s; }
+  .places-panel.collapsed { height: 60px; }
+  .places-panel.collapsed .results-heading, .places-panel.collapsed .status-message, .places-panel.collapsed .places-list, .places-panel.collapsed .panel-footer { display: none; }
+  .panel-top { padding: 9px 10px; }
+  .category-btn { padding: 8px 7px; font-size: 12px; border-radius: 11px; }
+  .category-btn b { font-size: 10px; }
+  .results-heading { padding: 8px 15px 4px; font-size: 13px; }
+  .status-message { padding: 0 15px 6px; font-size: 10px; }
+  .places-list { padding: 0 8px 8px; }
+  .place-row { padding: 8px; gap: 8px; }
+  .place-name { font-size: 12px; }
+  .place-symbol { width: 28px; height: 28px; }
+  .panel-footer { padding: 8px 14px; }
+  .map-legend { top: 10px; right: 10px; padding: 9px 10px; min-width: 0; gap: 7px; font-size: 10px; }
+  .map-legend strong { font-size: 11px; }
+  .selected-card { left: 10px; bottom: auto; top: 10px; max-width: calc(100% - 150px); padding: 8px 28px 8px 8px; gap: 7px; }
+  .selected-icon { width: 29px; height: 29px; border-radius: 9px; font-size: 12px; }
+  .selected-info strong { font-size: 11px; }
+  .selected-info small { font-size: 9px; }
+  .selected-card .btn { font-size: 10px; padding: 5px 7px; }
+  .selected-close { right: 5px; top: 4px; }
+  .map-help { font-size: 9px; }
+  .mobile-list-toggle { display: none; }
+}
+
+/* 12) ปุ่ม "เลือกทั้งหมด" แทนไอคอนลูกศรเดิม */
+.show-all-btn {
+  flex: 0 0 auto;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 9px 11px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 750;
+  white-space: nowrap;
+  transition: background .15s, border-color .15s, transform .15s;
+}
+.show-all-btn:hover { background: var(--page); border-color: #b8c7da; }
+.show-all-btn:active { transform: scale(.97); }
+.place-category { display: block; font-size: 10px; color: var(--muted); margin-top: 3px; }
+
+/* 13) สวิตช์ธีมแบบเลื่อน: พระอาทิตย์ = ธีมสว่าง, พระจันทร์ = ธีมมืด */
+.theme-switch {
+  position: relative;
+  width: 76px;
+  height: 40px;
+  flex: 0 0 76px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  border: 1px solid #d9e1ec;
+  border-radius: 999px;
+  background: #eaf2ff;
+  color: #f59e0b;
+  cursor: pointer;
+  box-shadow: inset 0 1px 3px rgba(24, 43, 77, .08);
+  transition: background .22s ease, border-color .22s ease;
+}
+.theme-switch:focus-visible { outline: 3px solid rgba(40, 120, 232, .3); outline-offset: 3px; }
+.theme-symbol { z-index: 1; display: grid; place-items: center; width: 20px; height: 24px; font-size: 17px; line-height: 1; transition: color .22s ease; }
+.theme-symbol.sun { color: #e99a13; }
+.theme-symbol.moon { color: #8091ac; }
+.theme-thumb {
+  position: absolute;
+  z-index: 2;
+  top: 3px;
+  left: 3px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 7px rgba(20, 35, 60, .2);
+  transition: transform .24s cubic-bezier(.2,.8,.2,1), background .22s ease;
+}
+/* เมื่อเป็นธีมมืด เลื่อนปุ่มกลมไปทางขวา */
+body[data-theme="dark"] .theme-switch { background: #202b3c; border-color: #43516a; }
+body[data-theme="dark"] .theme-thumb { transform: translateX(36px); background: #344154; }
+body[data-theme="dark"] .theme-symbol.sun { color: #8290a7; }
+body[data-theme="dark"] .theme-symbol.moon { color: #f6d365; }
+
+/* 14) ธีมสีดำ: เปลี่ยนตัวแปรสีหลัก และพื้นผิวส่วนประกอบต่าง ๆ */
+body[data-theme="dark"] {
+  --ink: #edf2fa;
+  --muted: #a7b4c8;
+  --line: #344154;
+  --surface: #1b2432;
+  --page: #111824;
+  --shadow: 0 8px 28px rgba(0, 0, 0, .34);
+  color: var(--ink);
+  background: var(--page);
+}
+body[data-theme="dark"] .app-header,
+body[data-theme="dark"] .places-panel,
+body[data-theme="dark"] .map-legend,
+body[data-theme="dark"] .selected-card {
+  background: rgba(27, 36, 50, .97);
+  border-color: var(--line);
+  color: var(--ink);
+}
+body[data-theme="dark"] .brand,
+body[data-theme="dark"] .brand strong,
+body[data-theme="dark"] .map-legend strong,
+body[data-theme="dark"] .selected-info strong { color: var(--ink); }
+body[data-theme="dark"] .search-wrap .form-control,
+body[data-theme="dark"] .btn-theme,
+body[data-theme="dark"] .show-all-btn {
+  background: #111824;
+  color: var(--ink);
+  border-color: var(--line);
+}
+body[data-theme="dark"] .search-wrap .form-control::placeholder { color: #8795aa; }
+body[data-theme="dark"] .btn-location { background: #293548; color: var(--ink); }
+body[data-theme="dark"] .btn-location:hover,
+body[data-theme="dark"] .btn-theme:hover,
+body[data-theme="dark"] .show-all-btn:hover { background: #344154; color: var(--ink); }
+body[data-theme="dark"] .place-row { color: var(--ink); }
+body[data-theme="dark"] .place-row:hover { background: #273346; }
+body[data-theme="dark"] .place-row.selected { background: #203653; border-color: #345b87; }
+body[data-theme="dark"] .count-pill { background: #293548; color: #d4deeb; }
+body[data-theme="dark"] .icon-button:hover { background: #293548; }
+body[data-theme="dark"] .category-btn.motorcycle:not(.active) { background: #402432; color: #ff8199; }
+body[data-theme="dark"] .category-btn.van:not(.active) { background: #1d3453; color: #80b5ff; }
+body[data-theme="dark"] .map-help { background: rgba(17, 24, 36, .86); color: #d5dfec; }
+body[data-theme="dark"] .leaflet-popup-content-wrapper,
+body[data-theme="dark"] .leaflet-popup-tip { background: #1b2432; color: #edf2fa; }
+body[data-theme="dark"] .popup-directions,
+body[data-theme="dark"] .directions-button { background: #233a58; border-color: #344f73; color: #b8d5ff; }
+body[data-theme="dark"] .popup-directions:hover,
+body[data-theme="dark"] .directions-button:hover { background: #2d496d; color: #e0ecff; }
+body[data-theme="dark"] .popup-directions-icon { background: #314f77; }
+body[data-theme="dark"] .leaflet-control-zoom a { background: #1b2432; color: #edf2fa; border-color: #344154; }
+body[data-theme="dark"] .leaflet-control-attribution { background: rgba(27, 36, 50, .85); color: #c3cede; }
+body[data-theme="dark"] .leaflet-control-attribution a { color: #80b5ff; }
+
+/* ปรับขนาดปุ่มให้ไม่เบียดกันบนมือถือ */
+@media (max-width: 900px) {
+  .theme-switch { width: 72px; flex-basis: 72px; }
+  body[data-theme="dark"] .theme-thumb { transform: translateX(32px); }
+}
+@media (max-width: 650px) {
+  .theme-switch { width: 68px; height: 38px; flex-basis: 68px; padding: 0 8px; }
+  .theme-thumb { width: 30px; height: 30px; top: 3px; left: 3px; }
+  body[data-theme="dark"] .theme-thumb { transform: translateX(30px); }
+  .theme-symbol { font-size: 15px; }
+  .show-all-btn { padding: 8px 9px; font-size: 11px; }
+}
